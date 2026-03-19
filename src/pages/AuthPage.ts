@@ -30,7 +30,7 @@ export class AuthPage extends BasePage {
    * Logs into Sauce Demo with provided credentials.
    */
   public async login(username: string, password: string): Promise<void> {
-    await this.locator('[data-test="username"]').fill(username);
+    await this.locator('[data-test="usernick"]').fill(username);
     await this.locator('[data-test="password"]').fill(password);
     await this.locator('[data-test="login-button"]').click();
   }
