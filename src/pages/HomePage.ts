@@ -74,4 +74,11 @@ export class HomePage extends BasePage {
   public productFilter(): Locator {
     return this.locator('[data-test="product-sort-container"]');
   }
+
+  /**
+   * Returns the text content of the login error message banner.
+   */
+  public async getLoginErrorMessage(): Promise<string | null> {
+    return this.locator('[data-test="error"]').textContent();
+  }
 }

@@ -27,6 +27,17 @@ test.describe('Home page', () => {
     await expect.poll(async () => homePage.isBackpackVisibleInCart()).toBe(true);
   });
 
+  test('should show error message on login with invalid password', async ({ homePage }) => {
+    await homePage.gotoLoginPage();
+    await expect.poll(async () => homePage.isLoginPageVisible()).toBe(true);
+
+    await homePage.login(EnvHelper.getSauceUsername(), 'invalid_password');
+
+    const errorMessage = await homePage.getLoginErrorMessage();
+    expect(errorMessage).toContain('Username and password do not match');
+    await expect.poll(async () => homePage.isLoginPageVisible()).toBe(true);
+  });
+
   test('should apply product filter', async ({ homePage }) => {
     await homePage.gotoLoginPage();
     await homePage.login(EnvHelper.getSauceUsername(), EnvHelper.getSaucePassword());
