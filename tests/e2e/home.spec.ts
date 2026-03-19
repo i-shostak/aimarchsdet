@@ -13,7 +13,7 @@ test.describe('Home page', () => {
     await expect.poll(async () => headerComponent.isVisible()).toBe(true);
   });
 
-  test('should add backpack to cart', async ({ authPage, headerComponent, homePage }) => {
+  test('should add backpack to cart', async ({ authPage, checkoutPage, headerComponent, homePage }) => {
     await authPage.gotoLoginPage();
     await authPage.loginAsStandardUser();
 
@@ -22,9 +22,9 @@ test.describe('Home page', () => {
     await expect.poll(async () => headerComponent.getCartBadgeCount()).toBe(1);
 
     await headerComponent.openCart();
-    await homePage.waitForUrl(/.*cart.html/);
+    await checkoutPage.waitForUrl(/.*cart.html/);
 
-    await expect.poll(async () => homePage.isBackpackVisibleInCart()).toBe(true);
+    await expect.poll(async () => checkoutPage.isBackpackVisibleInCart()).toBe(true);
   });
 
   test('should show error message on login with invalid password', async ({ authPage }) => {

@@ -5,7 +5,7 @@ import { PriceHelper } from '../utils/priceHelper';
 import { BasePage } from './BasePage';
 
 /**
- * Models the Sauce Demo inventory and cart workflows.
+ * Models the Sauce Demo inventory workflows.
  */
 export class HomePage extends BasePage {
   public constructor(page: Page) {
@@ -24,17 +24,6 @@ export class HomePage extends BasePage {
    */
   public async addBackpackToCart(): Promise<void> {
     await this.getByTestId('add-to-cart-sauce-labs-backpack').click();
-  }
-
-  /**
-   * Returns whether Sauce Labs Backpack is visible in the cart page.
-   * Scoped to the cart list to avoid false positives from inventory context.
-   */
-  public async isBackpackVisibleInCart(): Promise<boolean> {
-    return this.getByTestId('cart-list')
-      .getByTestId('inventory-item-name')
-      .filter({ hasText: 'Sauce Labs Backpack' })
-      .isVisible();
   }
 
   /**
