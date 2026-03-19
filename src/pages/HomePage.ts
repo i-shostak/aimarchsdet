@@ -1,7 +1,6 @@
 // path: src/pages/HomePage.ts
 import type { Page } from '@playwright/test';
 
-import { HeaderComponent } from '../components/HeaderComponent';
 import { EnvHelper } from '../utils/envHelper';
 import { BasePage } from './BasePage';
 
@@ -9,17 +8,14 @@ import { BasePage } from './BasePage';
  * Models Sauce Demo user workflows: login, inventory, and cart.
  */
 export class HomePage extends BasePage {
-  public readonly header: HeaderComponent;
-
   public constructor(page: Page) {
     super(page);
-    this.header = new HeaderComponent(page);
   }
 
   /**
-   * Opens the login page.
+   * Opens the Sauce Demo login page.
    */
-  public async gotoHome(): Promise<void> {
+  public async gotoLoginPage(): Promise<void> {
     await this.goto('/');
   }
 
@@ -51,7 +47,7 @@ export class HomePage extends BasePage {
    * Returns whether the inventory page is visible.
    */
   public async isInventoryPageVisible(): Promise<boolean> {
-    return this.locator('.title').filter({ hasText: 'Products' }).isVisible();
+    return this.locator('[data-test="title"]').filter({ hasText: 'Products' }).isVisible();
   }
 
   /**
@@ -63,8 +59,12 @@ export class HomePage extends BasePage {
 
   /**
    * Returns whether Sauce Labs Backpack is visible in the cart page.
+   * Scoped to the cart list to avoid false positives from inventory context.
    */
   public async isBackpackVisibleInCart(): Promise<boolean> {
-    return this.locator('[data-test="inventory-item-name"]').filter({ hasText: 'Sauce Labs Backpack' }).isVisible();
+    return this.locator('[data-test="cart-list"]')
+      .locator('[data-test="inventory-item-name"]')
+      .filter({ hasText: 'Sauce Labs Backpack' })
+      .isVisible();
   }
 }

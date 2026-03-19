@@ -15,7 +15,7 @@ export class HeaderComponent extends BaseComponent {
    * Returns whether the header is visible.
    */
   public async isVisible(): Promise<boolean> {
-    return this.headerLogo().isVisible();
+    return this.headerContainer().isVisible();
   }
 
   /**
@@ -27,6 +27,7 @@ export class HeaderComponent extends BaseComponent {
 
   /**
    * Returns item count from the cart badge. Returns 0 when badge is absent.
+   * Throws if the badge contains a non-numeric value.
    */
   public async getCartBadgeCount(): Promise<number> {
     const badge = this.locator('[data-test="shopping-cart-badge"]');
@@ -34,11 +35,16 @@ export class HeaderComponent extends BaseComponent {
       return 0;
     }
 
-    const value = await badge.innerText();
-    return Number(value);
+    const raw = (await badge.innerText()).trim();
+    const count = Number(raw);
+    if (Number.isNaN(count)) {
+      throw new Error(`Cart badge contains unexpected non-numeric value: "${raw}"`);
+    }
+
+    return count;
   }
 
-  private headerLogo(): Locator {
-    return this.locator('.app_logo');
+  private headerContainer(): Locator {
+    return this.locator('#header_container');
   }
 }

@@ -3,7 +3,7 @@ import { expect, test } from '../../src/fixtures/BaseTest';
 
 test.describe('Home page', () => {
   test('should login with standard user and open inventory page', async ({ headerComponent, homePage }) => {
-    await homePage.gotoHome();
+    await homePage.gotoLoginPage();
     await expect.poll(async () => homePage.isLoginPageVisible()).toBe(true);
 
     await homePage.loginAsStandardUser();
@@ -13,7 +13,7 @@ test.describe('Home page', () => {
   });
 
   test('should add backpack to cart', async ({ headerComponent, homePage }) => {
-    await homePage.gotoHome();
+    await homePage.gotoLoginPage();
     await homePage.loginAsStandardUser();
 
     await homePage.addBackpackToCart();
