@@ -37,10 +37,18 @@ export class HomePage extends BasePage {
   }
 
   /**
-   * Returns the locator for the product sort/filter dropdown.
+   * Returns the locator for the product sort dropdown.
    */
-  public productFilter(): Locator {
+  public productSort(): Locator {
     return this.locator('[data-test="product-sort-container"]');
+  }
+
+  /**
+   * Returns all visible inventory item prices as numbers, in DOM order.
+   */
+  public async getInventoryPrices(): Promise<number[]> {
+    const priceTexts = await this.locator('[data-test="inventory-item-price"]').allTextContents();
+    return priceTexts.map((t) => parseFloat(t.replace('$', '')));
   }
 
 }

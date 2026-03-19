@@ -38,15 +38,34 @@ test.describe('Home page', () => {
     await expect.poll(async () => authPage.isLoginPageVisible()).toBe(true);
   });
 
-  test('should apply product filter', async ({ authPage, homePage }) => {
+  test('should sort products by name Z to A', async ({ authPage, homePage }) => {
     await authPage.gotoLoginPage();
-    await authPage.login(EnvHelper.getSauceUsername(), EnvHelper.getSaucePassword());
-    await authPage.waitForUrl(/.*inventory.html/);
+    await authPage.loginAsStandardUser();
 
     await expect.poll(async () => homePage.isInventoryPageVisible()).toBe(true);
 
-    await homePage.productFilter().selectOption('za');
+    await homePage.productSort().selectOption('za');
 
-    await expect(homePage.productFilter()).toHaveValue('za');
+    await expect(homePage.productSort()).toHaveValue('za');
+  });
+
+  test('should sort products by price low to high', async ({ authPage, homePage }) => {
+    await authPage.gotoLoginPage();
+    await authPage.loginAsStandardUser();
+
+    await homePage.productSort().selectOption('lohi');
+
+    const prices = await homePage.getInventoryPrices();
+    expect(prices).toEqual([...prices].sort((a, b) => a - b));
+  });
+
+  test('should sort products by price high to low', async ({ authPage, homePage }) => {
+    await authPage.gotoLoginPage();
+    await authPage.loginAsStandardUser();
+
+    await homePage.productSort().selectOption('hilo');
+
+    const prices = await homePage.getInventoryPrices();
+    expect(prices).toEqual([...prices].sort((a, b) => b - a));
   });
 });
