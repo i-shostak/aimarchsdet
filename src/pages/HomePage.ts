@@ -1,46 +1,14 @@
 // path: src/pages/HomePage.ts
 import type { Locator, Page } from '@playwright/test';
 
-import { EnvHelper } from '../utils/envHelper';
 import { BasePage } from './BasePage';
 
 /**
- * Models Sauce Demo user workflows: login, inventory, and cart.
+ * Models the Sauce Demo inventory and cart workflows.
  */
 export class HomePage extends BasePage {
   public constructor(page: Page) {
     super(page);
-  }
-
-  /**
-   * Opens the Sauce Demo login page.
-   */
-  public async gotoLoginPage(): Promise<void> {
-    await this.goto('/');
-  }
-
-  /**
-   * Returns whether the login form is visible.
-   */
-  public async isLoginPageVisible(): Promise<boolean> {
-    return this.locator('[data-test="login-button"]').isVisible();
-  }
-
-  /**
-   * Logs into Sauce Demo with provided credentials.
-   */
-  public async login(username: string, password: string): Promise<void> {
-    await this.locator('[data-test="username"]').fill(username);
-    await this.locator('[data-test="password"]').fill(password);
-    await this.locator('[data-test="login-button"]').click();
-  }
-
-  /**
-   * Logs into Sauce Demo with the default standard user.
-   */
-  public async loginAsStandardUser(): Promise<void> {
-    await this.login(EnvHelper.getSauceUsername(), EnvHelper.getSaucePassword());
-    await this.waitForUrl(/.*inventory.html/);
   }
 
   /**
@@ -75,10 +43,4 @@ export class HomePage extends BasePage {
     return this.locator('[data-test="product-sort-container"]');
   }
 
-  /**
-   * Returns the text content of the login error message banner.
-   */
-  public async getLoginErrorMessage(): Promise<string | null> {
-    return this.locator('[data-test="error"]').textContent();
-  }
 }

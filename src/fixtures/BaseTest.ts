@@ -2,16 +2,21 @@
 import { test as base, expect } from '@playwright/test';
 
 import { HeaderComponent } from '../components/HeaderComponent';
+import { AuthPage } from '../pages/AuthPage';
 import { HomePage } from '../pages/HomePage';
 import { EnvHelper } from '../utils/envHelper';
 import { Logger } from '../utils/logger';
 
 type FrameworkFixtures = {
+  authPage: AuthPage;
   headerComponent: HeaderComponent;
   homePage: HomePage;
 };
 
 const test = base.extend<FrameworkFixtures>({
+  authPage: async ({ page }, use) => {
+    await use(new AuthPage(page));
+  },
   headerComponent: async ({ page }, use) => {
     await use(new HeaderComponent(page));
   },

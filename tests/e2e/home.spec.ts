@@ -3,19 +3,19 @@ import { expect, test } from '../../src/fixtures/BaseTest';
 import { EnvHelper } from '../../src/utils/envHelper';
 
 test.describe('Home page', () => {
-  test('should login with standard user and open inventory page', async ({ headerComponent, homePage }) => {
-    await homePage.gotoLoginPage();
-    await expect.poll(async () => homePage.isLoginPageVisible()).toBe(true);
+  test('should login with standard user and open inventory page', async ({ authPage, headerComponent, homePage }) => {
+    await authPage.gotoLoginPage();
+    await expect.poll(async () => authPage.isLoginPageVisible()).toBe(true);
 
-    await homePage.loginAsStandardUser();
+    await authPage.loginAsStandardUser();
 
     await expect.poll(async () => homePage.isInventoryPageVisible()).toBe(true);
     await expect.poll(async () => headerComponent.isVisible()).toBe(true);
   });
 
-  test('should add backpack to cart', async ({ headerComponent, homePage }) => {
-    await homePage.gotoLoginPage();
-    await homePage.loginAsStandardUser();
+  test('should add backpack to cart', async ({ authPage, headerComponent, homePage }) => {
+    await authPage.gotoLoginPage();
+    await authPage.loginAsStandardUser();
 
     await homePage.addBackpackToCart();
 
@@ -27,21 +27,21 @@ test.describe('Home page', () => {
     await expect.poll(async () => homePage.isBackpackVisibleInCart()).toBe(true);
   });
 
-  test('should show error message on login with invalid password', async ({ homePage }) => {
-    await homePage.gotoLoginPage();
-    await expect.poll(async () => homePage.isLoginPageVisible()).toBe(true);
+  test('should show error message on login with invalid password', async ({ authPage }) => {
+    await authPage.gotoLoginPage();
+    await expect.poll(async () => authPage.isLoginPageVisible()).toBe(true);
 
-    await homePage.login(EnvHelper.getSauceUsername(), 'invalid_password');
+    await authPage.login(EnvHelper.getSauceUsername(), 'invalid_password');
 
-    const errorMessage = await homePage.getLoginErrorMessage();
+    const errorMessage = await authPage.getLoginErrorMessage();
     expect(errorMessage).toContain('Username and password do not match');
-    await expect.poll(async () => homePage.isLoginPageVisible()).toBe(true);
+    await expect.poll(async () => authPage.isLoginPageVisible()).toBe(true);
   });
 
-  test('should apply product filter', async ({ homePage }) => {
-    await homePage.gotoLoginPage();
-    await homePage.login(EnvHelper.getSauceUsername(), EnvHelper.getSaucePassword());
-    await homePage.waitForUrl(/.*inventory.html/);
+  test('should apply product filter', async ({ authPage, homePage }) => {
+    await authPage.gotoLoginPage();
+    await authPage.login(EnvHelper.getSauceUsername(), EnvHelper.getSaucePassword());
+    await authPage.waitForUrl(/.*inventory.html/);
 
     await expect.poll(async () => homePage.isInventoryPageVisible()).toBe(true);
 
