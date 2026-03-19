@@ -23,16 +23,16 @@ export class AuthPage extends BasePage {
    * Returns whether the login form is visible.
    */
   public async isLoginPageVisible(): Promise<boolean> {
-    return this.locator('[data-test="login-button"]').isVisible();
+    return this.getByTestId('login-button').isVisible();
   }
 
   /**
    * Logs into Sauce Demo with provided credentials.
    */
   public async login(username: string, password: string): Promise<void> {
-    await this.locator('[data-test="username"]').fill(username);
-    await this.locator('[data-test="password"]').fill(password);
-    await this.locator('[data-test="login-button"]').click();
+    await this.getByTestId('username').fill(username);
+    await this.getByTestId('password').fill(password);
+    await this.getByTestId('login-button').click();
   }
 
   /**
@@ -47,6 +47,6 @@ export class AuthPage extends BasePage {
    * Returns the text content of the login error message banner.
    */
   public async getLoginErrorMessage(): Promise<string | null> {
-    return this.locator('[data-test="error"]').textContent();
+    return this.getByTestId('error').textContent();
   }
 }

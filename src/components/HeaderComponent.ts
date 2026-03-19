@@ -22,7 +22,7 @@ export class HeaderComponent extends BaseComponent {
    * Opens the shopping cart from the header.
    */
   public async openCart(): Promise<void> {
-    await this.locator('[data-test="shopping-cart-link"]').click();
+    await this.getByTestId('shopping-cart-link').click();
   }
 
   /**
@@ -30,7 +30,7 @@ export class HeaderComponent extends BaseComponent {
    * Throws if the badge contains a non-numeric value.
    */
   public async getCartBadgeCount(): Promise<number> {
-    const badge = this.locator('[data-test="shopping-cart-badge"]');
+    const badge = this.getByTestId('shopping-cart-badge');
     if (!(await badge.isVisible())) {
       return 0;
     }

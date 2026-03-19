@@ -1,6 +1,7 @@
 // path: src/pages/HomePage.ts
 import type { Locator, Page } from '@playwright/test';
 
+import { PriceHelper } from '../utils/priceHelper';
 import { BasePage } from './BasePage';
 
 /**
@@ -15,14 +16,14 @@ export class HomePage extends BasePage {
    * Returns whether the inventory page is visible.
    */
   public async isInventoryPageVisible(): Promise<boolean> {
-    return this.locator('[data-test="title"]').filter({ hasText: 'Products' }).isVisible();
+    return this.getByTestId('title').filter({ hasText: 'Products' }).isVisible();
   }
 
   /**
    * Adds Sauce Labs Backpack to cart from inventory.
    */
   public async addBackpackToCart(): Promise<void> {
-    await this.locator('[data-test="add-to-cart-sauce-labs-backpack"]').click();
+    await this.getByTestId('add-to-cart-sauce-labs-backpack').click();
   }
 
   /**
@@ -30,8 +31,8 @@ export class HomePage extends BasePage {
    * Scoped to the cart list to avoid false positives from inventory context.
    */
   public async isBackpackVisibleInCart(): Promise<boolean> {
-    return this.locator('[data-test="cart-list"]')
-      .locator('[data-test="inventory-item-name"]')
+    return this.getByTestId('cart-list')
+      .getByTestId('inventory-item-name')
       .filter({ hasText: 'Sauce Labs Backpack' })
       .isVisible();
   }
@@ -40,15 +41,14 @@ export class HomePage extends BasePage {
    * Returns the locator for the product sort dropdown.
    */
   public productSort(): Locator {
-    return this.locator('[data-test="product-sort-container"]');
+    return this.getByTestId('product-sort-container');
   }
 
   /**
    * Returns all visible inventory item prices as numbers, in DOM order.
    */
   public async getInventoryPrices(): Promise<number[]> {
-    const priceTexts = await this.locator('[data-test="inventory-item-price"]').allTextContents();
-    return priceTexts.map((t) => parseFloat(t.replace('$', '')));
+    const priceTexts = await this.getByTestId('inventory-item-price').allTextContents();
+    return priceTexts.map((priceText) => PriceHelper.parseCurrency(priceText));
   }
-
 }
