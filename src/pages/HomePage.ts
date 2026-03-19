@@ -1,5 +1,5 @@
 // path: src/pages/HomePage.ts
-import type { Page } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
 
 import { EnvHelper } from '../utils/envHelper';
 import { BasePage } from './BasePage';
@@ -66,5 +66,12 @@ export class HomePage extends BasePage {
       .locator('[data-test="inventory-item-name"]')
       .filter({ hasText: 'Sauce Labs Backpack' })
       .isVisible();
+  }
+
+  /**
+   * Returns the locator for the product sort/filter dropdown.
+   */
+  public productFilter(): Locator {
+    return this.locator('[data-test="product-sort-container"]');
   }
 }
