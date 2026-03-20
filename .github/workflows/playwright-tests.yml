@@ -176,7 +176,7 @@ jobs:
 
   deploy-pages:
     needs: playwright-tests
-    if: github.ref == 'refs/heads/main'
+    if: always() && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
       pages: write
