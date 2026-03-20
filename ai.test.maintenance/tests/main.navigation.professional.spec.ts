@@ -81,7 +81,7 @@ test.describe('playwright.dev — primary navbar', () => {
     }
   );
 
-  // TC-NAV-006: Edge – each nav link href must be a real, interactable path 
+  // TC-NAV-006: Edge – each nav link href must be a real, interactable path
   //             Guards against placeholder anchors or disabled links reaching production.
   test('[TC-NAV-006] nav links must each resolve to a valid, interactable href',
     { annotation: { type: 'TC', description: 'TC-NAV-006' } },
