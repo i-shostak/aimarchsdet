@@ -1,0 +1,59 @@
+name: Playwright Tests
+
+on:
+  pull_request:
+    branches: [ main ]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: playwright-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  playwright-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      CI: true
+
+    steps:
+      # Checkout the repository
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Set up Node.js LTS with Yarn cache
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: yarn
+
+      # Install dependencies using Yarn in immutable/CI mode
+      - name: Install dependencies
+        run: yarn install --immutable --immutable-cache --check-cache
+
+      # Install Playwright browsers along with system dependencies
+      - name: Install Playwright browsers
+        run: yarn playwright install --with-deps
+
+      # Run all Playwright tests in parallel
+      - name: Run Playwright tests
+        run: yarn playwright test
+
+      # Upload HTML report regardless of test outcome
+      - name: Upload HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-html-report
+          path: playwright-report
+
+      # Upload Playwright traces regardless of test outcome
+      - name: Upload traces
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-traces
+          path: test-results/**/trace*.zip
