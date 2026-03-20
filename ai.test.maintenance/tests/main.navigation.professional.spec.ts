@@ -89,7 +89,7 @@ test.describe('playwright.dev — primary navbar', () => {
       for (const { name } of navLinks) {
         const link = homePage.navLink(name);
 
-        // Link must resolve to a real path, not a stub
+        // Link must resolve to a real path, not a stub 
         await expect(link).not.toHaveAttribute('href', '#');
         await expect(link).not.toHaveAttribute('href', '');
 
