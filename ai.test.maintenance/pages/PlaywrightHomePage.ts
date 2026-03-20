@@ -1,4 +1,4 @@
-import type { Locator, Page } from '@playwright/test';
+import { expect, type Locator, type Page } from '@playwright/test';
 
 export class PlaywrightHomePage {
   private readonly getStartedLink: Locator;
@@ -23,5 +23,10 @@ export class PlaywrightHomePage {
 
   async clickNavLink(name: string): Promise<void> {
     await this.navLink(name).click();
+  }
+
+  async assertNavLink(name: string, url: string): Promise<void> {
+    await expect(this.navLink(name)).toBeVisible();
+    await expect(this.navLink(name)).toHaveAttribute('href', url);
   }
 }

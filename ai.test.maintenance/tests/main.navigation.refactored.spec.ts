@@ -24,15 +24,14 @@ test.describe('Main page navigation', () => {
 
   test('should display navigation links: Docs, API, Community', async () => {
     for (const { name, url } of navLinks) {
-      await expect(homePage.navLink(name)).toBeVisible();
-      await expect(homePage.navLink(name)).toHaveAttribute('href', url);
+      await homePage.assertNavLink(name, url);
     }
   });
 
   for (const { name, url, heading } of navLinks) {
     test(`${name} link opens the correct page`, async ({ page }) => {
       // Verify link target before clicking
-      await expect(homePage.navLink(name)).toHaveAttribute('href', url);
+      await homePage.assertNavLink(name, url);
 
       await homePage.clickNavLink(name);
 
