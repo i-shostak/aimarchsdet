@@ -1,6 +1,8 @@
 name: Playwright Tests
 
 on:
+  push:
+    branches: [ main ]
   pull_request:
     branches: [ main ]
 
@@ -8,13 +10,15 @@ permissions:
   contents: read
 
 concurrency:
-  group: playwright-${{ github.event.pull_request.number }}
+  group: playwright-${{ github.event.pull_request.number || github.run_id }}
   cancel-in-progress: true
 
 jobs:
   playwright-tests:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    permissions:
+      contents: read
     env:
       CI: true
 
@@ -112,6 +116,76 @@ jobs:
               ]
             }]
           }" ${{ secrets.TEAMS_WEBHOOK_URL }}
+
+      # --------------- GitHub Pages publishing (main branch only) ---------------
+
+      - name: Prepare history.json
+        if: always() && github.ref == 'refs/heads/main'
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p playwright-report
+
+          # Fetch existing history from the gh-pages branch, if it exists.
+          EXISTING_JSON="[]"
+          if git ls-remote --exit-code origin gh-pages > /dev/null 2>&1; then
+            TMPDIR=$(mktemp -d)
+            git clone --depth 1 --branch gh-pages \
+              "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" \
+              "$TMPDIR" 2>/dev/null || true
+            if [ -f "$TMPDIR/history.json" ] && \
+               node -e "JSON.parse(require('fs').readFileSync('$TMPDIR/history.json','utf8'))" 2>/dev/null; then
+              EXISTING_JSON=$(cat "$TMPDIR/history.json")
+            fi
+            rm -rf "$TMPDIR"
+          fi
+          export EXISTING_JSON
+
+          # Append a new record and write the merged array back.
+          node - <<'JSEOF'
+          const fs = require('fs');
+          let history;
+          try   { history = JSON.parse(process.env.EXISTING_JSON); }
+          catch { history = []; }
+          if (!Array.isArray(history)) history = [];
+
+          history.push({
+            timestamp : new Date().toISOString(),
+            runUrl    : process.env.RUN_URL,
+            commitSha : process.env.COMMIT_SHA,
+            ref       : process.env.REF,
+            branch    : process.env.BRANCH
+          });
+
+          fs.writeFileSync('playwright-report/history.json', JSON.stringify(history, null, 2));
+          console.log('history.json written with', history.length, 'record(s).');
+          JSEOF
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          COMMIT_SHA: ${{ github.sha }}
+          REF: ${{ github.ref }}
+          BRANCH: ${{ github.ref_name }}
+
+      - name: Upload Pages artifact
+        if: always() && github.ref == 'refs/heads/main'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: playwright-report/
+
+  deploy-pages:
+    needs: playwright-tests
+    if: always() && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+    steps:
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4
 
   security-scan:
     runs-on: ubuntu-latest
