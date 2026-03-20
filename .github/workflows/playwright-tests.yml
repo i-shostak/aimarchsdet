@@ -61,7 +61,6 @@ jobs:
       - name: Run Playwright tests (ai.test.maintenance)
         if: always()
         run: yarn playwright test --config=ai.test.maintenance/playwright.config.ts
-        continue-on-error: true
 
       # Upload HTML report for main tests
       - name: Upload HTML report (main)
@@ -114,3 +113,51 @@ jobs:
             }]
           }" ${{ secrets.TEAMS_WEBHOOK_URL }}
 
+  security-scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    continue-on-error: false
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: yarn
+
+      - name: Install dependencies
+        run: yarn install --immutable --immutable-cache --check-cache
+
+      - name: Run yarn audit
+        id: audit
+        run: |
+          yarn audit --level high --json > audit-report.json 2>&1 || true
+
+      - name: Write audit summary
+        if: always()
+        run: |
+          echo "## Dependency Vulnerability Scan" >> $GITHUB_STEP_SUMMARY
+          if [ ! -s audit-report.json ]; then
+            echo "No output from audit." >> $GITHUB_STEP_SUMMARY
+            exit 0
+          fi
+          HIGH=$(grep -c '"severity":"high"' audit-report.json || true)
+          CRITICAL=$(grep -c '"severity":"critical"' audit-report.json || true)
+          TOTAL=$((HIGH + CRITICAL))
+          echo "| Severity | Count |" >> $GITHUB_STEP_SUMMARY
+          echo "|----------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| High     | $HIGH |" >> $GITHUB_STEP_SUMMARY
+          echo "| Critical | $CRITICAL |" >> $GITHUB_STEP_SUMMARY
+          if [ "$TOTAL" -gt 0 ]; then
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "> :x: $TOTAL high/critical vulnerabilit(ies) detected. Blocking PR." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "> :white_check_mark: No high or critical vulnerabilities found." >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Fail on high or critical vulnerabilities
+        run: yarn audit --level high
