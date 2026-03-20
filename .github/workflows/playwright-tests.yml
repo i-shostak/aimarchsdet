@@ -1,4 +1,4 @@
-﻿name: Playwright Tests
+name: Playwright Tests
 
 on:
   pull_request:
@@ -49,7 +49,6 @@ jobs:
       # Run tests from tests/e2e (root config)
       - name: Run Playwright tests (main)
         run: yarn playwright test
-        continue-on-error: true
 
       # Preserve main test output before running the second suite
       - name: Move main test output
@@ -114,3 +113,4 @@ jobs:
               ]
             }]
           }" ${{ secrets.TEAMS_WEBHOOK_URL }}
+
