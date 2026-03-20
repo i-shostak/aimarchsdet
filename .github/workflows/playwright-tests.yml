@@ -38,22 +38,52 @@ jobs:
       - name: Install Playwright browsers
         run: yarn playwright install --with-deps
 
-      # Run all Playwright tests in parallel
-      - name: Run Playwright tests
+      # Run tests from tests/e2e (root config)
+      - name: Run Playwright tests (main)
         run: yarn playwright test
+        continue-on-error: true
 
-      # Upload HTML report regardless of test outcome
-      - name: Upload HTML report
+      # Preserve main test output before running the second suite
+      - name: Move main test output
+        if: always()
+        run: |
+          mv playwright-report playwright-report-main || true
+          mv test-results test-results-main || true
+
+      # Run tests from ai.test.maintenance/tests
+      - name: Run Playwright tests (ai.test.maintenance)
+        if: always()
+        run: yarn playwright test --config=ai.test.maintenance/playwright.config.ts
+        continue-on-error: true
+
+      # Upload HTML report for main tests
+      - name: Upload HTML report (main)
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-html-report
+          name: playwright-html-report-main
+          path: playwright-report-main
+
+      # Upload HTML report for ai.test.maintenance tests
+      - name: Upload HTML report (ai.test.maintenance)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-html-report-ai
           path: playwright-report
 
-      # Upload Playwright traces regardless of test outcome
-      - name: Upload traces
+      # Upload Playwright traces for main tests
+      - name: Upload traces (main)
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-traces
+          name: playwright-traces-main
+          path: test-results-main/**/trace*.zip
+
+      # Upload Playwright traces for ai.test.maintenance tests
+      - name: Upload traces (ai.test.maintenance)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-traces-ai
           path: test-results/**/trace*.zip
