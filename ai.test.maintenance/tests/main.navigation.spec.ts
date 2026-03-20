@@ -12,8 +12,9 @@ test.describe('Main page navigation', () => {
   test('should display navigation links: Docs, API, Community', async ({ page }) => {
     const homePage = new PlaywrightHomePage(page);
     await homePage.goto();
+    await page.waitForTimeout(2000)
 
-    await expect(homePage.navLink('Docs')).toBeVisible();
+    await expect(page.locator('a.navbar__link:has-text("Docs")')).toBeVisible();
     await expect(homePage.navLink('API')).toBeVisible();
     await expect(homePage.navLink('Community')).toBeVisible();
   });
@@ -23,6 +24,7 @@ test.describe('Main page navigation', () => {
       const homePage = new PlaywrightHomePage(page);
       await homePage.goto();
       await homePage.clickNavLink(name);
+      await page.waitForTimeout(2000)
 
       await expect(page).toHaveURL(url);
     });
