@@ -22,7 +22,7 @@ test.describe('Home page', () => {
     await expect.poll(async () => headerComponent.getCartBadgeCount()).toBe(1);
 
     await headerComponent.openCart();
-    await checkoutPage.waitForUrl(/.*cart.html/);
+    await checkoutPage.waitForUrl(/.*carTESTDELETEt.html/);
 
     await expect.poll(async () => checkoutPage.isBackpackVisibleInCart()).toBe(true);
   });
