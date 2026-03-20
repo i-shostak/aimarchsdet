@@ -68,6 +68,6 @@
 - [ ] **[A]** Add at least one destination-content assertion per nav link
 - [ ] **[B]** Investigate why `waitForTimeout` was needed and fix the root cause in `goto()` or test setup
 
-after review:
+
 1. check href before clicking
 2. area-current="page"
