@@ -1,6 +1,11 @@
 # TAF — Test Automation Framework
 
-A TypeScript-based end-to-end test automation framework built on [Playwright](https://playwright.dev/), targeting [Sauce Demo](https://www.saucedemo.com). It follows the **Page Object Model** pattern and ships with a custom fixture layer, structured logging, and a GitHub Actions CI pipeline.
+A TypeScript-based end-to-end test automation framework built on [Playwright](https://playwright.dev/). It contains two independent test suites:
+
+- **Main suite** (`tests/e2e/`) — functional E2E tests targeting [Sauce Demo](https://www.saucedemo.com), a standard login/shopping-cart app used for automation practice.
+- **AI maintenance suite** (`ai.test.maintenance/`) — a dedicated workspace for AI-assisted test analysis, refactoring, and quality review, targeting [playwright.dev](https://playwright.dev).
+
+Both suites follow the **Page Object Model** pattern. The framework ships with a custom fixture layer, structured logging, and a GitHub Actions CI pipeline that runs both suites independently.
 
 ---
 
@@ -16,6 +21,8 @@ A TypeScript-based end-to-end test automation framework built on [Playwright](ht
   - [Architecture](#architecture)
   - [Key Components](#key-components)
 - [Test Suites](#test-suites)
+  - [Main suite (Sauce Demo)](#main-suite--teste2ehomespects)
+  - [AI maintenance suite (playwright.dev)](#ai-maintenance-suite--aitestmaintenance)
 
 ---
 
@@ -215,21 +222,3 @@ Lightweight structured logger that prefixes every message with an ISO timestamp 
 | Video | `retain-on-failure` |
 | `testIdAttribute` | `data-test` |
 
----
-
-## Test Suites
-
-### Main suite — `tests/e2e/home.spec.ts`
-
-| Test | Description |
-|---|---|
-| Login with standard user | Verifies successful login and inventory page load |
-| Add backpack to cart | Adds an item and verifies the cart badge and cart page |
-| Login with invalid password | Verifies the error message is shown |
-| Sort by name Z to A | Verifies the `za` sort option is applied |
-| Sort by price low to high | Verifies prices are sorted in ascending order |
-| Sort by price high to low | Verifies prices are sorted in descending order |
-
-### AI maintenance suite — `ai.test.maintenance/`
-
-A secondary suite used for AI-assisted test analysis, refactoring experiments, and documentation generation. It has its own `playwright.config.ts` and is run independently in CI.
